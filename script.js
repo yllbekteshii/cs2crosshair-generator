@@ -56,11 +56,11 @@
     };
 
     const backgrounds = [
-        { name: "Dust2", url: "https://totalcsgo.com/assets/crosshair-generator/backgrounds/small/dust2-a.png" },
-        { name: "Mirage", url: "https://totalcsgo.com/assets/crosshair-generator/backgrounds/small/nuke-outside.png" },
-        { name: "Inferno", url: "https://totalcsgo.com/assets/crosshair-generator/backgrounds/small/mirage-a.png"},
-        { name: "Nuke", url: "https://totalcsgo.com/assets/crosshair-generator/backgrounds/small/mirage-a.png" },
-        { name: "Overpass", url: "https://totalcsgo.com/assets/crosshair-generator/backgrounds/small/mirage-a.png" }
+        { name: "Ancient", url: "maps/ancient.png" },
+        { name: "Mirage", url: "maps/mirage.png" },
+        { name: "Inferno", url: "maps/inferno.png" },
+        { name: "Nuke", url: "maps/nuke.png" },
+        { name: "Overpass", url: "maps/overpass.png" }
     ];
 
     let currentBackgroundIndex = 0;
@@ -90,14 +90,15 @@
         const alpha = settings.alphaEnabled ? settings.alpha : 255;
         const color = `rgba(${settings.red}, ${settings.green}, ${settings.blue}, ${alpha / 255})`;
 
-        const scaleFactor = 1.25;
+        const scaleFactor = 2; // Increase this for sharper rendering
         const length = settings.length * 4 * scaleFactor;
-        const thickness = settings.thickness * scaleFactor;
+        const thickness = Math.max(1, Math.round(settings.thickness * scaleFactor));
         const gap = settings.gap * scaleFactor;
-        const outline = settings.outlineEnabled ? settings.outline * scaleFactor : 0;
+        const outline = settings.outlineEnabled ? Math.max(1, Math.round(settings.outline * scaleFactor)) : 0;
 
         ctx.save();
-        ctx.translate(centerX, centerY);
+        ctx.translate(Math.round(centerX), Math.round(centerY));
+        ctx.imageSmoothingEnabled = false; // Disable anti-aliasing for sharper edges
 
         if (outline > 0) {
             ctx.strokeStyle = 'rgba(0, 0, 0, 1)';
@@ -125,44 +126,21 @@
     }
 
     function drawCrosshairLines(ctx, length, gap, thickness, tStyle) {
-        const halfThickness = thickness / 1.3;
-        
-        // Adjust gap calculation
-        const adjustedGap = Math.max(0, gap + 5) * 1.85;
+        const halfThickness = Math.floor(thickness / 2);
+        const adjustedGap = Math.max(0, Math.round(gap + 5) * 1.85);
 
+        ctx.beginPath();
         if (!tStyle) {
             // Top
-            ctx.beginPath();
-            ctx.moveTo(-halfThickness, -adjustedGap);
-            ctx.lineTo(-halfThickness, -adjustedGap - length);
-            ctx.lineTo(halfThickness, -adjustedGap - length);
-            ctx.lineTo(halfThickness, -adjustedGap);
-            ctx.stroke();
+            ctx.rect(-halfThickness, -adjustedGap - length, thickness, length);
         }
-
         // Right
-        ctx.beginPath();
-        ctx.moveTo(adjustedGap, -halfThickness);
-        ctx.lineTo(adjustedGap + length, -halfThickness);
-        ctx.lineTo(adjustedGap + length, halfThickness);
-        ctx.lineTo(adjustedGap, halfThickness);
-        ctx.stroke();
-
+        ctx.rect(adjustedGap, -halfThickness, length, thickness);
         // Bottom
-        ctx.beginPath();
-        ctx.moveTo(-halfThickness, adjustedGap);
-        ctx.lineTo(-halfThickness, adjustedGap + length);
-        ctx.lineTo(halfThickness, adjustedGap + length);
-        ctx.lineTo(halfThickness, adjustedGap);
-        ctx.stroke();
-
+        ctx.rect(-halfThickness, adjustedGap, thickness, length);
         // Left
-        ctx.beginPath();
-        ctx.moveTo(-adjustedGap, -halfThickness);
-        ctx.lineTo(-adjustedGap - length, -halfThickness);
-        ctx.lineTo(-adjustedGap - length, halfThickness);
-        ctx.lineTo(-adjustedGap, halfThickness);
-        ctx.stroke();
+        ctx.rect(-adjustedGap - length, -halfThickness, length, thickness);
+        ctx.fill();
     }
 
     function drawDynamicCrosshair(settings, ctx, centerX, centerY, length, gap, thickness) {
@@ -199,12 +177,16 @@
     function updateUI() {
         for (const [key, config] of Object.entries(settingsConfig)) {
             const element = document.getElementById(key);
+            const numberInput = document.getElementById(`${key}Number`);
             if (element) {
                 const value = settings[key];
                 if (element.type === 'checkbox') {
                     element.checked = value;
                 } else if (element.type === 'range' || element.type === 'crosshair-style') {
                     element.value = value;
+                    if (numberInput) {
+                        numberInput.value = value;
+                    }
                     const valueDisplay = document.getElementById(`${key}Value`);
                     if (valueDisplay) {
                         valueDisplay.textContent = value;
@@ -219,13 +201,23 @@
         }
     }
 
+    // Modify the existing event listener for inputs to handle number inputs
     document.querySelectorAll('input, select').forEach(input => {
         input.addEventListener('input', (e) => {
-            const setting = e.target.id;
-            let value = e.target.type === 'checkbox' ? e.target.checked : e.target.type === 'crosshair-style' ? parseInt(e.target.value) : parseFloat(e.target.value);
+            const setting = e.target.id.replace('Number', ''); // Remove 'Number' suffix if present
+            let value;
+            if (e.target.type === 'checkbox') {
+                value = e.target.checked;
+            } else if (e.target.type === 'number' || e.target.type === 'range') {
+                value = parseFloat(e.target.value);
+            } else if (e.target.type === 'select-one') {
+                value = parseInt(e.target.value);
+            }
             updateSettings(setting, value);
         });
     });
+
+    // Remove the separate event listener for number inputs, as it's now handled above
 
     document.getElementById('copyButton').addEventListener('click', () => {
         const shareCode = encodeCrosshair(settings);
