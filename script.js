@@ -4,8 +4,8 @@
     const canvas = document.getElementById('crosshairPreview');
     const ctx = canvas.getContext('2d');
 
-    canvas.width = 800;
-    canvas.height = 600;
+    canvas.width = 1000;
+    canvas.height = 750;
 
     const settings = {
         style: 4,
@@ -39,7 +39,7 @@
         alpha: ["alpha", 0, 255, "int"],
         thickness: ["thickness", 0, 3, "float"],
         length: ["length", 0, 15, "float"],
-        gap: ["gap", -10, 10, "float"],
+        gap: ["gap", -5, 5, "float"],
         outline: ["outline", 0, 3, "float"],
         outlineEnabled: ["outlineEnabled", 0, 1, "bool"],
         centerDotEnabled: ["centerDotEnabled", 0, 1, "bool"],
@@ -57,10 +57,10 @@
 
     const backgrounds = [
         { name: "Dust2", url: "https://totalcsgo.com/assets/crosshair-generator/backgrounds/small/dust2-a.png" },
-        { name: "Mirage", url: "https://totalcsgo.com/image/cache/catalog/crosshair-generator/backgrounds/mirage-a-site-1280x720.jpg" },
-        { name: "Inferno", url: "https://totalcsgo.com/image/cache/catalog/crosshair-generator/backgrounds/inferno-a-site-1280x720.jpg" },
-        { name: "Nuke", url: "https://totalcsgo.com/image/cache/catalog/crosshair-generator/backgrounds/nuke-outside-1280x720.jpg" },
-        { name: "Overpass", url: "https://totalcsgo.com/image/cache/catalog/crosshair-generator/backgrounds/overpass-b-site-1280x720.jpg" }
+        { name: "Mirage", url: "https://totalcsgo.com/assets/crosshair-generator/backgrounds/small/nuke-outside.png" },
+        { name: "Inferno", url: "https://totalcsgo.com/assets/crosshair-generator/backgrounds/small/mirage-a.png"},
+        { name: "Nuke", url: "https://totalcsgo.com/assets/crosshair-generator/backgrounds/small/mirage-a.png" },
+        { name: "Overpass", url: "https://totalcsgo.com/assets/crosshair-generator/backgrounds/small/mirage-a.png" }
     ];
 
     let currentBackgroundIndex = 0;
@@ -87,12 +87,14 @@
     }
 
     function drawCrosshair(settings, ctx, centerX, centerY) {
-        const color = `rgba(${settings.red}, ${settings.green}, ${settings.blue}, ${settings.alpha / 255})`;
+        const alpha = settings.alphaEnabled ? settings.alpha : 255;
+        const color = `rgba(${settings.red}, ${settings.green}, ${settings.blue}, ${alpha / 255})`;
 
-        const length = Math.max(0, Math.min(settings.length * 2, 30));
-        const thickness = Math.max(1, Math.min(Math.round(settings.thickness * 2), 6));
-        const gap = Math.max(-20, Math.min(settings.gap * 2, 20));
-        const outline = settings.outlineEnabled ? Math.max(0, Math.min(settings.outline, 3)) : 0;
+        const scaleFactor = 1.25;
+        const length = settings.length * 4 * scaleFactor;
+        const thickness = settings.thickness * scaleFactor;
+        const gap = settings.gap * scaleFactor;
+        const outline = settings.outlineEnabled ? settings.outline * scaleFactor : 0;
 
         ctx.save();
         ctx.translate(centerX, centerY);
@@ -109,7 +111,7 @@
         drawCrosshairLines(ctx, length, gap, thickness, settings.tStyleEnabled);
 
         if (settings.centerDotEnabled) {
-            const dotSize = Math.max(thickness, 2);
+            const dotSize = Math.max(thickness, 2 * scaleFactor);
             ctx.beginPath();
             ctx.arc(0, 0, dotSize / 2, 0, Math.PI * 2);
             ctx.fill();
@@ -123,48 +125,44 @@
     }
 
     function drawCrosshairLines(ctx, length, gap, thickness, tStyle) {
-        const halfThickness = thickness / 2;
+        const halfThickness = thickness / 1.3;
+        
+        // Adjust gap calculation
+        const adjustedGap = Math.max(0, gap + 5) * 1.85;
 
-        // Top
-        ctx.beginPath();
-        ctx.moveTo(-halfThickness, -gap);
-        ctx.lineTo(-halfThickness, -gap - length);
-        ctx.lineTo(halfThickness, -gap - length);
-        ctx.lineTo(halfThickness, -gap);
-        ctx.stroke();
+        if (!tStyle) {
+            // Top
+            ctx.beginPath();
+            ctx.moveTo(-halfThickness, -adjustedGap);
+            ctx.lineTo(-halfThickness, -adjustedGap - length);
+            ctx.lineTo(halfThickness, -adjustedGap - length);
+            ctx.lineTo(halfThickness, -adjustedGap);
+            ctx.stroke();
+        }
 
         // Right
         ctx.beginPath();
-        ctx.moveTo(gap, -halfThickness);
-        ctx.lineTo(gap + length, -halfThickness);
-        ctx.lineTo(gap + length, halfThickness);
-        ctx.lineTo(gap, halfThickness);
+        ctx.moveTo(adjustedGap, -halfThickness);
+        ctx.lineTo(adjustedGap + length, -halfThickness);
+        ctx.lineTo(adjustedGap + length, halfThickness);
+        ctx.lineTo(adjustedGap, halfThickness);
         ctx.stroke();
 
         // Bottom
         ctx.beginPath();
-        ctx.moveTo(-halfThickness, gap);
-        ctx.lineTo(-halfThickness, gap + length);
-        ctx.lineTo(halfThickness, gap + length);
-        ctx.lineTo(halfThickness, gap);
+        ctx.moveTo(-halfThickness, adjustedGap);
+        ctx.lineTo(-halfThickness, adjustedGap + length);
+        ctx.lineTo(halfThickness, adjustedGap + length);
+        ctx.lineTo(halfThickness, adjustedGap);
         ctx.stroke();
 
         // Left
         ctx.beginPath();
-        ctx.moveTo(-gap, -halfThickness);
-        ctx.lineTo(-gap - length, -halfThickness);
-        ctx.lineTo(-gap - length, halfThickness);
-        ctx.lineTo(-gap, halfThickness);
+        ctx.moveTo(-adjustedGap, -halfThickness);
+        ctx.lineTo(-adjustedGap - length, -halfThickness);
+        ctx.lineTo(-adjustedGap - length, halfThickness);
+        ctx.lineTo(-adjustedGap, halfThickness);
         ctx.stroke();
-
-        if (tStyle) {
-            ctx.beginPath();
-            ctx.moveTo(-length, -halfThickness);
-            ctx.lineTo(length, -halfThickness);
-            ctx.lineTo(length, halfThickness);
-            ctx.lineTo(-length, halfThickness);
-            ctx.stroke();
-        }
     }
 
     function drawDynamicCrosshair(settings, ctx, centerX, centerY, length, gap, thickness) {
@@ -193,7 +191,7 @@
                 value = Boolean(value);
             }
             settings[setting] = value;
-            updateCrosshair(); // Ensure crosshair is updated
+            updateCrosshair();
             updateUI();
         }
     }
@@ -213,6 +211,11 @@
                     }
                 }
             }
+        }
+        // Update alpha input visibility based on alphaEnabled
+        const alphaInput = document.getElementById('alpha');
+        if (alphaInput) {
+            alphaInput.style.display = settings.alphaEnabled ? 'block' : 'none';
         }
     }
 
@@ -238,6 +241,7 @@
                 updateCrosshair();
                 updateUI();
             } catch (error) {
+                console.error('Error decoding share code:', error);
                 alert('Invalid share code');
             }
         });
@@ -304,5 +308,8 @@
     }
 
     preloadImages();
-})();
 
+    document.getElementById('alphaEnabled').addEventListener('change', (e) => {
+        updateSettings('alphaEnabled', e.target.checked);
+    });
+})();
