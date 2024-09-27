@@ -14,19 +14,16 @@ body {
     width: 100%;
     max-width: 970px;
     background-color: #2a475e;
-    border-radius: 3px;
+    border-radius: 5px;
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
 }
 
 .header {
-    width: 100%;
     background-color: #171a21;
-    padding: 10px 0;
+    padding: 15px 0;
     text-align: center;
-    border-bottom: 1px solid #4b5f74;
+    border-bottom: 2px solid #4b5f74;
 }
 
 .header h1 {
@@ -36,13 +33,14 @@ body {
 }
 
 .crosshair-preview {
+    width: 970px; 
+    height: 300px; 
     position: relative;
-    width: 100%;
-    height: 500px;
-    background-color: #000;
+    margin: 0 auto;
+    object-fit: contain;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
 }
 
 #crosshairPreview {
@@ -52,29 +50,23 @@ body {
 }
 
 .settings-container {
-    width: 100%;
     padding: 20px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
 }
 
 .setting-group {
-    width: 100%;
-    margin-bottom: 20px;
     background-color: #1b2838;
-    padding: 15px;
+    padding: 20px;
     border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 h2 {
-    margin-top: 0;
     color: #66c0f4;
-    font-size: 18px;
-    font-weight: normal;
-    border-bottom: 1px solid #4b5f74;
-    padding-bottom: 5px;
+    font-size: 20px;
+    font-weight: 600;
+    border-bottom: 2px solid #4b5f74;
+    padding-bottom: 10px;
     margin-bottom: 20px;
 }
 
@@ -82,7 +74,6 @@ h2 {
     display: flex;
     align-items: center;
     margin-bottom: 15px;
-    width: 100%;
 }
 
 label {
@@ -95,27 +86,38 @@ input[type="range"] {
     flex: 2;
     -webkit-appearance: none;
     width: 100%;
-    height: 4px;
+    height: 6px;
     background: #4b5f74;
     outline: none;
-    margin: 0 10px;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    border-radius: 3px;
+}
+
+input[type="range"]:hover {
+    opacity: 1;
 }
 
 input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 12px;
-    height: 12px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
     background: #66c0f4;
     cursor: pointer;
+    transition: background 0.2s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    background: #4da5d8;
 }
 
 .toggle {
     position: relative;
     display: inline-block;
-    width: 34px;
-    height: 18px;
+    width: 44px;
+    height: 22px;
 }
 
 .toggle input {
@@ -133,14 +135,14 @@ input[type="range"]::-webkit-slider-thumb {
     bottom: 0;
     background-color: #4b5f74;
     transition: .4s;
-    border-radius: 18px;
+    border-radius: 22px;
 }
 
 .toggle label:before {
     position: absolute;
     content: "";
-    height: 14px;
-    width: 14px;
+    height: 18px;
+    width: 18px;
     left: 2px;
     bottom: 2px;
     background-color: #c7d5e0;
@@ -153,28 +155,38 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .toggle input:checked + label:before {
-    transform: translateX(16px);
+    transform: translateX(22px);
 }
 
 select {
     flex: 2;
-    padding: 3px;
+    padding: 8px;
     background-color: #4b5f74;
     color: #c7d5e0;
     border: none;
-    border-radius: 3px;
+    border-radius: 4px;
     font-size: 14px;
+    cursor: pointer;
 }
 
-span {
-    flex: 0 0 30px;
-    text-align: right;
-    font-size: 12px;
-    color: #acb4bd;
+span[contenteditable="true"] {
+    min-width: 30px;
+    text-align: center;
+    font-size: 14px;
+    color: #66c0f4;
+    background-color: #1b2838;
+    border: 1px solid #4b5f74;
+    padding: 4px 8px;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+span[contenteditable="true"]:focus {
+    border-color: #66c0f4;
 }
 
 .actions {
-    width: 100%;
     display: flex;
     justify-content: space-between;
     margin-top: 20px;
@@ -185,9 +197,11 @@ span {
     color: #1b2838;
     border: none;
     padding: 10px 20px;
-    border-radius: 3px;
+    border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
+    font-weight: 600;
+    transition: background-color 0.2s;
 }
 
 .actions button:hover {
@@ -212,5 +226,12 @@ span {
 
 #nextBackground {
     right: 10px;
+}
+
+.info-icon {
+    cursor: help;
+    color: #66c0f4;
+    font-size: 14px;
+    margin-left: 5px;
 }
 

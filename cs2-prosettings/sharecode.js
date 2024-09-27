@@ -1,6 +1,14 @@
 const DICTIONARY = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefhijkmnopqrstuvwxyz23456789";
 const DICTIONARY_LENGTH = BigInt(DICTIONARY.length);
 const SHARECODE_PATTERN = /^CSGO(-?[\w]{5}){5}$/;
+const predefinedColors = [
+    [255, 0, 0],   // Red
+    [0, 255, 0],   // Green
+    [255, 255, 0], // Yellow
+    [0, 0, 255],   // Blue
+    [0, 255, 255], // Cyan
+];
+
 
 function uint8ToInt8(number) {
     return (number << 24) >> 24;
@@ -62,16 +70,36 @@ function decodeCrosshairShareCode(shareCode) {
         console.warn('Checksum mismatch, but continuing to decode');
     }
 
+    const rawGap = decodeSignedByte(bytes[2]);
+    const gap = rawGap / 10;
+
+    // Color handling
+    const colorIndex = bytes[10] & 7;
+    let red = bytes[4];
+    let green = bytes[5];
+    let blue = bytes[6];
+
+    if (colorIndex !== 5) {
+        if (colorIndex >= 0 && colorIndex < predefinedColors.length) {
+            [red, green, blue] = predefinedColors[colorIndex];
+        } else {
+            red = 0;
+            green = 255;
+            blue = 0;
+        }
+    }
+
     return {
-        gap: (uint8ToInt8(bytes[2]) / 10) * (5/31), 
+        gap: gap,
         outline: (bytes[3] & 0xFF) / 2,
-        red: bytes[4],
-        green: bytes[5],
-        blue: bytes[6],
+        red: red,
+        green: green,
+        blue: blue,
         alpha: bytes[7],
-        splitDistance: bytes[8],
-        fixedCrosshairGap: uint8ToInt8(bytes[9]) / 10,
-        color: bytes[10] & 7,
+        splitDistance: bytes[8] & 0x7F,
+        followRecoil: (bytes[8] & 0x80) !== 0,
+        fixedCrosshairGap: decodeSignedByte(bytes[9]) / 10,
+        color: colorIndex,
         outlineEnabled: (bytes[10] & 8) === 8,
         innerSplitAlpha: ((bytes[10] >> 4) & 0xF) / 10,
         outerSplitAlpha: (bytes[11] & 0xF) / 10,
@@ -86,42 +114,42 @@ function decodeCrosshairShareCode(shareCode) {
     };
 }
 
-function encodeCrosshair(crosshair) {
-    const bytes = [
-        0,
-        1,
-        Math.round((crosshair.gap / (5/31)) * 10) & 0xFF, 
-        (crosshair.outline * 2) & 7,
-        crosshair.red,
-        crosshair.green,
-        crosshair.blue,
-        crosshair.alpha,
-        crosshair.splitDistance,
-        (crosshair.fixedCrosshairGap * 10) & 0xFF,
-        (crosshair.color & 7) |
-            (crosshair.outlineEnabled ? 8 : 0) |
-            (crosshair.innerSplitAlpha * 10) << 4,
-        ((crosshair.outerSplitAlpha * 10) & 0xF) |
-            ((crosshair.splitSizeRatio * 10) << 4),
-        (crosshair.thickness * 10) & 0x3F,
-        ((crosshair.style << 1) & 0xE) |
-            (crosshair.centerDotEnabled ? 0x10 : 0) |
-            (crosshair.deployedWeaponGapEnabled ? 0x20 : 0) |
-            (crosshair.alphaEnabled ? 0x40 : 0) |
-            (crosshair.tStyleEnabled ? 0x80 : 0),
-        (crosshair.length * 10) & 0xFF,
-        ((crosshair.length * 10) >> 8) & 0x1F,
-        0,
-        0
-    ];
+function decodeSignedByte(byte) {
+    return byte > 127 ? byte - 256 : byte;
+}
 
+function encodeCrosshair(config) {
+    const bytes = [0, 1];
+    bytes.push(encodeSignedByte(Math.round(10 * config.gap)));
+    bytes.push(Math.floor(2 * config.outline));
+    bytes.push(config.red);
+    bytes.push(config.green);
+    bytes.push(config.blue);
+    bytes.push(config.alpha);
+    bytes.push((127 & config.splitDistance) | (config.followRecoil ? 128 : 0));
+    bytes.push(encodeSignedByte(Math.round(10 * config.fixedCrosshairGap)));
+    bytes.push(config.color | (config.outlineEnabled ? 8 : 0) | (Math.round(10 * config.innerSplitAlpha) << 4));
+    bytes.push((15 & Math.round(10 * config.outerSplitAlpha)) | (Math.round(10 * config.splitSizeRatio) << 4));
+    bytes.push(Math.round(10 * config.thickness));
+    bytes.push(((7 & config.style) << 1) | (config.centerDotEnabled ? 0x10 : 0) | (config.deployedWeaponGapEnabled ? 0x20 : 0) | (config.alphaEnabled ? 0x40 : 0) | (config.tStyleEnabled ? 0x80 : 0));
+    bytes.push(Math.round(10 * config.length) % 256);
+    bytes.push(Math.floor(Math.round(10 * config.length) / 256));
+    bytes.push(0);
+    bytes.push(0);
+    bytes[0] = calculateChecksum(bytes);
+    return bytesToShareCode(bytes);
+}
+
+function calculateChecksum(bytes) {
     let sum = 0;
-    for (let i = 1; i < bytes.length; ++i) {
+    for (let i = 1; i < bytes.length; i++) {
         sum += bytes[i];
     }
-    bytes[0] = sum & 0xFF;
+    return sum % 256;
+}
 
-    return bytesToShareCode(bytes);
+function encodeSignedByte(value) {
+    return value < 0 ? value + 256 : value;
 }
 
 window.encodeCrosshair = encodeCrosshair;
