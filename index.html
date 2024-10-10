@@ -16,94 +16,98 @@
             <canvas id="crosshairPreview"></canvas>
             <button id="nextBackground" class="background-arrow">&gt;</button>
         </div>
-        <div class="settings-container">
-            <div class="setting-group">
-                <h2>Crosshair</h2>
-                <div class="setting">
-                    <label for="zoomSlider">Zoom Level <span class="info-icon" title="Adjusts the zoom level of the crosshair preview. This does not affect the in-game crosshair.">ⓘ</span></label>
-                    <input type="range" id="zoomSlider" min="1" max="4" step="0.1" value="1">
-                    <span id="zoomSliderValue" contenteditable="true">2</span>
-                </div>
-                <div class="setting">
-                    <label for="crosshairStyle">Crosshair Style:</label>
-                    <select id="crosshairStyle" name="crosshairStyle">
-                        <option value="0">Classic</option>
-                        <option value="1">Legacy</option>
-                        <option value="2">Classic Static</option>
-                    </select>
-                </div>
-                <div class="setting">
-                    <label for="red">Red</label>
-                    <input type="range" id="red" min="0" max="255" value="0">
-                    <span id="redValue">0</span>
-                </div>
-                <div class="setting">
-                    <label for="green">Green</label>
-                    <input type="range" id="green" min="0" max="255" value="255">
-                    <span id="greenValue">255</span>
-                </div>
-                <div class="setting">
-                    <label for="blue">Blue</label>
-                    <input type="range" id="blue" min="0" max="255" value="0">
-                    <span id="blueValue">0</span>
-                </div>
-                <div class="setting">
-                    <label for="alphaEnabled">Alpha Enabled:</label>
-                    <input type="checkbox" id="alphaEnabled" name="alphaEnabled">
-                </div>
-                <div class="setting">
-                    
-                    <label for="alpha">Alpha</label>
-                    <input type="range" id="alpha" min="0" max="255" value="200">
-                    <span id="alphaValue">200</span>
-                </div>
-                <div class="setting">
-                    <label for="thickness">Thickness</label>
-                    <input type="range" id="thickness" min="0" max="3" step="0.1" value="1">
-                    <span id="thicknessValue">1</span>
-                </div>
-                <div class="setting">
-                    <label for="length">Length</label>
-                    <input type="range" id="length" min="0" max="15" step="0.1" value="5">
-                    <span id="lengthValue">5</span>
-                </div>
-                <div class="setting">
-                    <label for="gap">Gap</label>
-                    <input type="range" id="gap" min="-10" max="10" step="0.1" value="3">
-                    <span id="gapValue">3</span>
-                </div>
-                <div class="setting">
-                    <label for="outlineEnabled">Outline</label>
-                    <div class="toggle">
-                        <input type="checkbox" id="outlineEnabled">
-                        <label for="outlineEnabled"></label>
+        <div class="scrollable-settings">
+            <div class="settings-container">
+                <div class="setting-group">
+                    <div class="actions">
+                        <button id="copyButton">Copy</button>
+                        <button id="pasteButton">Paste</button>
+                        <button id="randomizeButton">Randomize</button>
+                        <button id="shareButton">Share</button>
                     </div>
-                </div>
-                <div class="setting">
-                    <label for="outline">Outline Thickness</label>
-                    <input type="range" id="outline" min="0" max="3" step="0.1" value="1">
-                    <span id="outlineValue">1</span>
-                </div>
-                <div class="setting">
-                    <label for="centerDotEnabled">Center Dot</label>
-                    <div class="toggle">
-                        <input type="checkbox" id="centerDotEnabled">
-                        <label for="centerDotEnabled"></label>
+                    <h2>Crosshair</h2>
+                    <div class="setting">
+                        <label for="crosshairStyle">Crosshair Style</label>
+                        <select id="crosshairStyle" name="crosshairStyle">
+                            <option value="0">Classic</option>
+                            <option value="1">Legacy</option>
+                            <option value="2" selected>Classic Static</option>
+                        </select>
                     </div>
-                </div>
-                <div class="setting">
-                    <label for="tStyleEnabled">T Style</label>
-                    <div class="toggle">
-                        <input type="checkbox" id="tStyleEnabled">
-                        <label for="tStyleEnabled"></label>
+                    <div class="setting">
+                        <label for="centerDotEnabled">Center Dot</label>
+                        <div class="toggle">
+                            <input type="checkbox" id="centerDotEnabled">
+                            <label for="centerDotEnabled"></label>
+                        </div>
                     </div>
+                    <div class="setting">
+                        <label for="length">Length</label>
+                        <input type="range" id="length" min="0" max="15" step="0.1" value="5">
+                        <span id="lengthValue">5</span>
+                    </div>
+                    <div class="setting">
+                        <label for="thickness">Thickness</label>
+                        <input type="range" id="thickness" min="0" max="3" step="0.1" value="1">
+                        <span id="thicknessValue">1</span>
+                    </div>
+                    <div class="setting">
+                        <label for="gap">Gap</label>
+                        <input type="range" id="gap" min="-10" max="10" step="0.1" value="3">
+                        <span id="gapValue">3</span>
+                    </div>
+                    <div class="setting">
+                        <label for="outlineEnabled">Outline</label>
+                        <div class="toggle">
+                            <input type="checkbox" id="outlineEnabled">
+                            <label for="outlineEnabled"></label>
+                        </div>
+                    </div>
+                    <div class="setting">
+                        <label for="outline">Outline Thickness</label>
+                        <input type="range" id="outline" min="0" max="3" step="0.1" value="1">
+                        <span id="outlineValue">1</span>
+                    </div>
+                    <div class="setting">
+                        <label for="red">Red</label>
+                        <input type="range" id="red" min="0" max="255" value="0">
+                        <span id="redValue">0</span>
+                    </div>
+                    <div class="setting">
+                        <label for="green">Green</label>
+                        <input type="range" id="green" min="0" max="255" value="255">
+                        <span id="greenValue">255</span>
+                    </div>
+                    <div class="setting">
+                        <label for="blue">Blue</label>
+                        <input type="range" id="blue" min="0" max="255" value="0">
+                        <span id="blueValue">0</span>
+                    </div>
+                    <div class="setting">
+                        <label for="alphaEnabled">Alpha Enabled</label>
+                        <div class="toggle">
+                            <input type="checkbox" id="alphaEnabled" checked>
+                            <label for="alphaEnabled"></label>
+                        </div>
+                    </div>
+                    <div class="setting">
+                        <label for="alpha">Alpha</label>
+                        <input type="range" id="alpha" min="0" max="255" value="200">
+                        <span id="alphaValue">200</span>
+                    </div>
+                    <div class="setting">
+                        <label for="tStyleEnabled">T Style</label>
+                        <div class="toggle">
+                            <input type="checkbox" id="tStyleEnabled">
+                            <label for="tStyleEnabled"></label>
+                        </div>
+                    </div>
+                    <!-- <div class="setting">
+                        <label for="zoomSlider">Zoom Level <span class="info-icon" title="Adjusts the zoom level of the crosshair preview. This does not affect the in-game crosshair.">ⓘ</span></label>
+                        <input type="range" id="zoomSlider" min="1" max="4" step="0.1" value="1">
+                        <span id="zoomSliderValue" contenteditable="true">2</span>
+                    </div> -->
                 </div>
-            </div>
-            <div class="actions">
-                <button id="copyButton">Copy</button>
-                <button id="pasteButton">Paste</button>
-                <button id="randomizeButton">Randomize</button>
-                <button id="shareButton">Share</button>
             </div>
         </div>
     </div>

@@ -74,6 +74,8 @@
 
     let zoomFactor = 1;
 
+    let crosshairStyle = 2; // Default to Classic Static
+
     function updateCrosshair() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
@@ -83,13 +85,41 @@
         console.log('Image natural size:', currentImage.naturalWidth, 'x', currentImage.naturalHeight);
         
         if (currentImage.complete) {
-            ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
+            // Calculate scaling factors
+            const scaleX = canvas.width / currentImage.naturalWidth;
+            const scaleY = canvas.height / currentImage.naturalHeight;
+            const scale = Math.max(scaleX, scaleY);
+
+            // Calculate new dimensions
+            const newWidth = currentImage.naturalWidth * scale;
+            const newHeight = currentImage.naturalHeight * scale;
+
+            // Calculate positioning to center the image
+            const x = (canvas.width - newWidth) / 2;
+            const y = (canvas.height - newHeight) / 2;
+
+            // Draw the image
+            ctx.drawImage(currentImage, x, y, newWidth, newHeight);
             console.log('Background drawn');
             drawCrosshair(settings, canvas);
         } else {
             console.log('Image not loaded, setting onload');
             currentImage.onload = () => {
-                ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
+                // Calculate scaling factors
+                const scaleX = canvas.width / currentImage.naturalWidth;
+                const scaleY = canvas.height / currentImage.naturalHeight;
+                const scale = Math.max(scaleX, scaleY);
+
+                // Calculate new dimensions
+                const newWidth = currentImage.naturalWidth * scale;
+                const newHeight = currentImage.naturalHeight * scale;
+
+                // Calculate positioning to center the image
+                const x = (canvas.width - newWidth) / 2;
+                const y = (canvas.height - newHeight) / 2;
+
+                // Draw the image
+                ctx.drawImage(currentImage, x, y, newWidth, newHeight);
                 console.log('Background drawn after load');
                 drawCrosshair(settings, canvas);
             };
@@ -226,9 +256,9 @@
             }
         }
         const alphaInput = document.getElementById('alpha');
-        if (alphaInput) {
-            alphaInput.style.display = settings.alphaEnabled ? 'block' : 'none';
-        }
+        // if (alphaInput) {
+        //     alphaInput.style.display = settings.alphaEnabled ? 'block' : 'none';
+        // }
     }
 
     document.querySelectorAll('input, select').forEach(input => {
@@ -362,4 +392,13 @@
             e.target.blur();
         }
     });
+
+    document.getElementById('crosshairStyle').value = crosshairStyle;
+
+    document.getElementById('crosshairStyle').addEventListener('change', function() {
+        crosshairStyle = parseInt(this.value);
+        updateCrosshair();
+    });
+
+    updateCrosshair();
 })();
