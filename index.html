@@ -4,30 +4,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CS2 Crosshair Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>CS2 Crosshair Setting</h1>
-        </div>
+        <h1>CS2 Crosshair Generator</h1>
         <div class="crosshair-preview">
             <button id="prevBackground" class="background-arrow">&lt;</button>
             <canvas id="crosshairPreview"></canvas>
             <button id="nextBackground" class="background-arrow">&gt;</button>
         </div>
+        <div class="button-row">
+            <button id="crosshairProfile">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 18C15.3137 18 18 15.3137 18 12C18 8.68629 15.3137 6 12 6C8.68629 6 6 8.68629 6 12C6 15.3137 8.68629 18 12 18Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 14C13.1046 14 14 13.1046 14 12C14 10.8954 13.1046 10 12 10C10.8954 10 10 10.8954 10 12C10 13.1046 10.8954 14 12 14Z" fill="currentColor"/>
+                </svg>
+                CROSSHAIR PROFILE
+            </button>
+            <div class="right-buttons">
+                <button id="shareButton">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 12V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M16 6L12 2L8 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 2V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Share
+                </button>
+                <button id="randomizeButton">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 3H21V8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M4 20L21 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M21 16V21H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M15 15L21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M4 4L9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Random
+                </button>
+                <button id="copyButton">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20 9H11C9.89543 9 9 9.89543 9 11V20C9 21.1046 9.89543 22 11 22H20C21.1046 22 22 21.1046 22 20V11C22 9.89543 21.1046 9 20 9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M5 15H4C3.46957 15 2.96086 14.7893 2.58579 14.4142C2.21071 14.0391 2 13.5304 2 13V4C2 3.46957 2.21071 2.96086 2.58579 2.58579C2.96086 2.21071 3.46957 2 4 2H13C13.5304 2 14.0391 2.21071 14.4142 2.58579C14.7893 2.96086 15 3.46957 15 4V5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Copy
+                </button>
+                <button id="pasteButton">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 4H18C18.5304 4 19.0391 4.21071 19.4142 4.58579C19.7893 4.96086 20 5.46957 20 6V20C20 20.5304 19.7893 21.0391 19.4142 21.4142C19.0391 21.7893 18.5304 22 18 22H6C5.46957 22 4.96086 21.7893 4.58579 21.4142C4.21071 21.0391 4 20.5304 4 20V6C4 5.46957 4.21071 4.96086 4.58579 4.58579C4.96086 4.21071 5.46957 4 6 4H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M15 2H9C8.44772 2 8 2.44772 8 3V5C8 5.55228 8.44772 6 9 6H15C15.5523 6 16 5.55228 16 5V3C16 2.44772 15.5523 2 15 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Paste
+                </button>
+                <button id="searchPlayers">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Search Players
+                </button>
+            </div>
+        </div>
         <div class="scrollable-settings">
             <div class="settings-container">
                 <div class="setting-group">
-                    <div class="actions">
-                        <button id="copyButton">Copy</button>
-                        <button id="pasteButton">Paste</button>
-                        <button id="randomizeButton">Randomize</button>
-                        <button id="shareButton">Share</button>
-                    </div>
                     <h2>Crosshair</h2>
                     <div class="setting">
-                        <label for="crosshairStyle">Crosshair Style</label>
+                        <label for="crosshairStyle">CROSSHAIR STYLE</label>
                         <select id="crosshairStyle" name="crosshairStyle">
                             <option value="0">Classic</option>
                             <option value="1">Legacy</option>
@@ -35,78 +79,75 @@
                         </select>
                     </div>
                     <div class="setting">
-                        <label for="centerDotEnabled">Center Dot</label>
+                        <label for="centerDotEnabled">CENTER DOT</label>
                         <div class="toggle">
                             <input type="checkbox" id="centerDotEnabled">
                             <label for="centerDotEnabled"></label>
                         </div>
                     </div>
                     <div class="setting">
-                        <label for="length">Length</label>
-                        <input type="range" id="length" min="0" max="15" step="0.1" value="5">
-                        <span id="lengthValue">5</span>
+                        <label for="length">LENGTH</label>
+                        <div class="setting-control">
+                            <input type="range" id="length" min="0" max="15" step="0.1" value="5">
+                            <span id="lengthValue" contenteditable="true">5</span>
+                        </div>
                     </div>
                     <div class="setting">
-                        <label for="thickness">Thickness</label>
+                        <label for="thickness">THICKNESS</label>
                         <input type="range" id="thickness" min="0" max="3" step="0.1" value="1">
-                        <span id="thicknessValue">1</span>
+                        <span id="thicknessValue" contenteditable="true">1</span>
                     </div>
                     <div class="setting">
-                        <label for="gap">Gap</label>
+                        <label for="gap">GAP</label>
                         <input type="range" id="gap" min="-10" max="10" step="0.1" value="3">
-                        <span id="gapValue">3</span>
+                        <span id="gapValue" contenteditable="true">3</span>
                     </div>
                     <div class="setting">
-                        <label for="outlineEnabled">Outline</label>
+                        <label for="outlineEnabled">OUTLINE</label>
                         <div class="toggle">
                             <input type="checkbox" id="outlineEnabled">
                             <label for="outlineEnabled"></label>
                         </div>
                     </div>
                     <div class="setting">
-                        <label for="outline">Outline Thickness</label>
+                        <label for="outline">OUTLINE THICKNESS</label>
                         <input type="range" id="outline" min="0" max="3" step="0.1" value="1">
-                        <span id="outlineValue">1</span>
+                        <span id="outlineValue" contenteditable="true">1</span>
                     </div>
                     <div class="setting">
-                        <label for="red">Red</label>
+                        <label for="red">RED</label>
                         <input type="range" id="red" min="0" max="255" value="0">
-                        <span id="redValue">0</span>
+                        <span id="redValue" contenteditable="true">0</span>
                     </div>
                     <div class="setting">
-                        <label for="green">Green</label>
+                        <label for="green">GREEN</label>
                         <input type="range" id="green" min="0" max="255" value="255">
-                        <span id="greenValue">255</span>
+                        <span id="greenValue" contenteditable="true">255</span>
                     </div>
                     <div class="setting">
-                        <label for="blue">Blue</label>
+                        <label for="blue">BLUE</label>
                         <input type="range" id="blue" min="0" max="255" value="0">
-                        <span id="blueValue">0</span>
+                        <span id="blueValue" contenteditable="true">0</span>
                     </div>
                     <div class="setting">
-                        <label for="alphaEnabled">Alpha Enabled</label>
+                        <label for="alphaEnabled">ALPHA ENABLED</label>
                         <div class="toggle">
                             <input type="checkbox" id="alphaEnabled" checked>
                             <label for="alphaEnabled"></label>
                         </div>
                     </div>
                     <div class="setting">
-                        <label for="alpha">Alpha</label>
+                        <label for="alpha">ALPHA</label>
                         <input type="range" id="alpha" min="0" max="255" value="200">
-                        <span id="alphaValue">200</span>
+                        <span id="alphaValue" contenteditable="true">200</span>
                     </div>
                     <div class="setting">
-                        <label for="tStyleEnabled">T Style</label>
+                        <label for="tStyleEnabled">T STYLE</label>
                         <div class="toggle">
                             <input type="checkbox" id="tStyleEnabled">
                             <label for="tStyleEnabled"></label>
                         </div>
                     </div>
-                    <!-- <div class="setting">
-                        <label for="zoomSlider">Zoom Level <span class="info-icon" title="Adjusts the zoom level of the crosshair preview. This does not affect the in-game crosshair.">ⓘ</span></label>
-                        <input type="range" id="zoomSlider" min="1" max="4" step="0.1" value="1">
-                        <span id="zoomSliderValue" contenteditable="true">2</span>
-                    </div> -->
                 </div>
             </div>
         </div>
