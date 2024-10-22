@@ -1,3 +1,5 @@
+// This module handles encoding and decoding of crosshair settings
+
 const DICTIONARY = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefhijkmnopqrstuvwxyz23456789";
 const DICTIONARY_LENGTH = BigInt(DICTIONARY.length);
 const SHARECODE_PATTERN = /^CSGO(-?[\w]{5}){5}$/;
@@ -9,19 +11,40 @@ const predefinedColors = [
     [0, 255, 255], // Cyan
 ];
 
-
+/**
+ * Converts an unsigned 8-bit integer to a signed 8-bit integer
+ * @param {number} number - The unsigned 8-bit integer
+ * @returns {number} The signed 8-bit integer
+ */
 function uint8ToInt8(number) {
     return (number << 24) >> 24;
 }
 
+/**
+ * Sums all elements in an array
+ * @param {number[]} array - The array of numbers to sum
+ * @returns {number} The sum of all elements in the array
+ */
 function sumArray(array) {
     return array.reduce((previousValue, value) => previousValue + value, 0);
 }
 
+/**
+ * Clamps a value between a minimum and maximum
+ * @param {number} value - The value to clamp
+ * @param {number} min - The minimum allowed value
+ * @param {number} max - The maximum allowed value
+ * @returns {number} The clamped value
+ */
 function clamp(value, min, max) {
     return Math.min(Math.max(value, min), max);
 }
 
+/**
+ * Converts a share code to a byte array
+ * @param {string} shareCode - The share code to convert
+ * @returns {Uint8Array} The byte array representation of the share code
+ */
 function shareCodeToBytes(shareCode) {
     if (!shareCode.match(SHARECODE_PATTERN)) {
         throw new Error('Invalid share code');
@@ -44,6 +67,11 @@ function shareCodeToBytes(shareCode) {
     return bytes;
 }
 
+/**
+ * Converts a byte array to a share code
+ * @param {Uint8Array} bytes - The byte array to convert
+ * @returns {string} The share code
+ */
 function bytesToShareCode(bytes) {
     let acc = 0n;
     let pos = 1n;
@@ -62,7 +90,12 @@ function bytesToShareCode(bytes) {
     return `CSGO-${result.slice(0, 5)}-${result.slice(5, 10)}-${result.slice(10, 15)}-${result.slice(15, 20)}-${result.slice(20, 25)}`;
 }
 
-function decodeCrosshairShareCode(shareCode) {
+/**
+ * Decodes a crosshair share code into settings
+ * @param {string} shareCode - The share code to decode
+ * @returns {Object} The decoded crosshair settings
+ */
+export function decodeCrosshairShareCode(shareCode) {
     const bytes = shareCodeToBytes(shareCode);
     const size = sumArray(Array.from(bytes.slice(1))) % 256;
 
@@ -114,11 +147,21 @@ function decodeCrosshairShareCode(shareCode) {
     };
 }
 
+/**
+ * Decodes a signed byte
+ * @param {number} byte - The byte to decode
+ * @returns {number} The decoded signed value
+ */
 function decodeSignedByte(byte) {
     return byte > 127 ? byte - 256 : byte;
 }
 
-function encodeCrosshair(config) {
+/**
+ * Encodes crosshair settings into a share code
+ * @param {Object} config - The crosshair settings to encode
+ * @returns {string} The encoded share code
+ */
+export function encodeCrosshair(config) {
     const bytes = [0, 1];
     bytes.push(encodeSignedByte(Math.round(10 * config.gap)));
     bytes.push(Math.floor(2 * config.outline));
@@ -140,6 +183,11 @@ function encodeCrosshair(config) {
     return bytesToShareCode(bytes);
 }
 
+/**
+ * Calculates the checksum for the byte array
+ * @param {number[]} bytes - The byte array to calculate the checksum for
+ * @returns {number} The calculated checksum
+ */
 function calculateChecksum(bytes) {
     let sum = 0;
     for (let i = 1; i < bytes.length; i++) {
@@ -148,9 +196,11 @@ function calculateChecksum(bytes) {
     return sum % 256;
 }
 
+/**
+ * Encodes a signed byte
+ * @param {number} value - The value to encode
+ * @returns {number} The encoded unsigned byte
+ */
 function encodeSignedByte(value) {
     return value < 0 ? value + 256 : value;
 }
-
-window.encodeCrosshair = encodeCrosshair;
-window.decodeCrosshairShareCode = decodeCrosshairShareCode;
