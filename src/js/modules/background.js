@@ -23,6 +23,7 @@ export let currentBackgroundIndex = 0;
 const backgroundImages = backgrounds.map((bg) => {
   const img = new Image();
   img.src = bg.url;
+  img.onerror = () => console.error(`Failed to load image: ${bg.url}`);
   return img;
 });
 
@@ -38,12 +39,33 @@ export const updateCrosshair = debounce(() => {
 
   const currentImage = backgroundImages[currentBackgroundIndex];
 
-  if (currentImage.complete) {
-    drawBackground(ctx, currentImage, canvas);
+  if (currentImage.complete && currentImage.naturalWidth !== 0) {
+    try {
+      drawBackground(ctx, currentImage, canvas);
+    } catch (error) {
+      console.error("Error drawing background:", error);
+      // Draw a fallback background or leave it blank
+      ctx.fillStyle = "#f0f0f0";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
     drawCrosshair(settings, canvas);
   } else {
     currentImage.onload = () => {
-      drawBackground(ctx, currentImage, canvas);
+      try {
+        drawBackground(ctx, currentImage, canvas);
+      } catch (error) {
+        console.error("Error drawing background:", error);
+        // Draw a fallback background or leave it blank
+        ctx.fillStyle = "#f0f0f0";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+      drawCrosshair(settings, canvas);
+    };
+    currentImage.onerror = () => {
+      console.error(`Failed to load image: ${backgrounds[currentBackgroundIndex].url}`);
+      // Draw a fallback background or leave it blank
+      ctx.fillStyle = "#f0f0f0";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
       drawCrosshair(settings, canvas);
     };
   }
@@ -56,17 +78,21 @@ export const updateCrosshair = debounce(() => {
  * @param {HTMLCanvasElement} canvas - The canvas element
  */
 function drawBackground(ctx, image, canvas) {
-  const scaleX = canvas.width / image.naturalWidth;
-  const scaleY = canvas.height / image.naturalHeight;
-  const scale = Math.max(scaleX, scaleY);
+  if (image.complete && image.naturalWidth !== 0) {
+    const scaleX = canvas.width / image.naturalWidth;
+    const scaleY = canvas.height / image.naturalHeight;
+    const scale = Math.max(scaleX, scaleY);
 
-  const newWidth = image.naturalWidth * scale;
-  const newHeight = image.naturalHeight * scale;
+    const newWidth = image.naturalWidth * scale;
+    const newHeight = image.naturalHeight * scale;
 
-  const x = (canvas.width - newWidth) / 2;
-  const y = (canvas.height - newHeight) / 2;
+    const x = (canvas.width - newWidth) / 2;
+    const y = (canvas.height - newHeight) / 2;
 
-  ctx.drawImage(image, x, y, newWidth, newHeight);
+    ctx.drawImage(image, x, y, newWidth, newHeight);
+  } else {
+    throw new Error("Image not fully loaded or broken");
+  }
 }
 
 /**
