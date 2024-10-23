@@ -48,6 +48,7 @@ h1 {
     height: 100%;
     background-size: cover;
     background-position: center;
+    border-radius: 12px;
     transition: background-image 0.3s ease-in-out;
     display: flex;
     justify-content: center;
