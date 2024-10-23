@@ -58,10 +58,6 @@ export function updateBackground() {
   const backgroundContainer = document.getElementById("backgroundContainer");
   if (loadedImages[currentBackgroundIndex]) {
     backgroundContainer.style.backgroundImage = `url(${loadedImages[currentBackgroundIndex].src})`;
-  } else {
-    // If the image hasn't loaded yet, show a loading indicator
-    backgroundContainer.style.backgroundImage = 'none';
-    backgroundContainer.textContent = 'Loading...';
   }
 }
 
@@ -118,18 +114,11 @@ export function initializeBackgrounds() {
   updateMapDots();
   updateCrosshair();
   
-  // Show loading indicator
-  const backgroundContainer = document.getElementById("backgroundContainer");
-  backgroundContainer.style.backgroundImage = 'none';
-  backgroundContainer.textContent = 'Loading backgrounds...';
-
   // Preload images
   preloadImages().then(() => {
     console.log('All background images loaded');
     updateBackground();
-    backgroundContainer.textContent = ''; // Clear loading text
   }).catch(error => {
     console.error('Error loading background images:', error);
-    backgroundContainer.textContent = 'Error loading backgrounds';
   });
 }
