@@ -80,3 +80,4 @@ export function updateSettings(setting, value) {
   }
   return false;
 }
+

@@ -1,8 +1,8 @@
 // This is the main entry point for the application
 
-import { settings, settingsConfig } from './modules/settings.js';
+import { settings, settingsConfig, updateSettings } from './modules/settings.js';
 import { updateUI, initializeUI } from './modules/ui.js';
-import { updateCrosshair, updateMapDots } from './modules/background.js';
+import { updateCrosshair, updateMapDots, forceUpdateCrosshair } from './modules/background.js';
 import { updateSliderBackground } from './utils.js';
 import { encodeCrosshair, decodeCrosshairShareCode } from './modules/sharecode.js';
 
@@ -53,21 +53,29 @@ document.addEventListener('DOMContentLoaded', () => {
       // Apply other settings
       Object.assign(settings, importedSettings);
       
-      updateCrosshair();
+      forceUpdateCrosshair();
       updateUI();
     } catch (error) {
       console.error("Invalid share code in URL", error);
     }
   }
 
-  let animationFrameId;
-
-  function animate() {
-    updateCrosshair();
-    animationFrameId = requestAnimationFrame(animate);
-  }
-
-  animate(); // Start the animation loop
+  // Set up paste functionality
+  document.getElementById('pasteButton').addEventListener('click', () => {
+    navigator.clipboard.readText().then(text => {
+      try {
+        const pastedSettings = JSON.parse(text);
+        updateSettings(pastedSettings);
+        forceUpdateCrosshair(); // Force an immediate update of the crosshair
+        updateUI(); // Update the UI to reflect the new settings
+      } catch (error) {
+        console.error('Failed to parse pasted crosshair settings:', error);
+        // Optionally show an error message to the user
+      }
+    }).catch(err => {
+      console.error('Failed to read clipboard contents: ', err);
+    });
+  });
 });
 
 // Add this function to handle sharing
