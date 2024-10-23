@@ -16,6 +16,27 @@ export const backgrounds = [
 ];
 
 export let currentBackgroundIndex = 0;
+let loadedImages = [];
+
+/**
+ * Preloads all background images
+ * @returns {Promise} A promise that resolves when all images are loaded
+ */
+function preloadImages() {
+  const loadingPromises = backgrounds.map((bg, index) => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        loadedImages[index] = img;
+        resolve();
+      };
+      img.onerror = reject;
+      img.src = bg.url;
+    });
+  });
+
+  return Promise.all(loadingPromises);
+}
 
 /**
  * Updates the crosshair preview with the current background and crosshair
@@ -35,8 +56,13 @@ export const updateCrosshair = debounce(() => {
  */
 export function updateBackground() {
   const backgroundContainer = document.getElementById("backgroundContainer");
-  const currentBackground = backgrounds[currentBackgroundIndex];
-  backgroundContainer.style.backgroundImage = `url(${currentBackground.url})`;
+  if (loadedImages[currentBackgroundIndex]) {
+    backgroundContainer.style.backgroundImage = `url(${loadedImages[currentBackgroundIndex].src})`;
+  } else {
+    // If the image hasn't loaded yet, show a loading indicator
+    backgroundContainer.style.backgroundImage = 'none';
+    backgroundContainer.textContent = 'Loading...';
+  }
 }
 
 /**
@@ -88,6 +114,22 @@ export function forceUpdateCrosshair() {
 }
 
 // Initial setup
-updateBackground();
-updateMapDots();
-updateCrosshair();
+export function initializeBackgrounds() {
+  updateMapDots();
+  updateCrosshair();
+  
+  // Show loading indicator
+  const backgroundContainer = document.getElementById("backgroundContainer");
+  backgroundContainer.style.backgroundImage = 'none';
+  backgroundContainer.textContent = 'Loading backgrounds...';
+
+  // Preload images
+  preloadImages().then(() => {
+    console.log('All background images loaded');
+    updateBackground();
+    backgroundContainer.textContent = ''; // Clear loading text
+  }).catch(error => {
+    console.error('Error loading background images:', error);
+    backgroundContainer.textContent = 'Error loading backgrounds';
+  });
+}

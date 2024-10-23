@@ -2,7 +2,7 @@
 
 import { settings, settingsConfig, updateSettings } from './modules/settings.js';
 import { updateUI, initializeUI } from './modules/ui.js';
-import { updateCrosshair, updateMapDots, forceUpdateCrosshair } from './modules/background.js';
+import { updateCrosshair, updateMapDots, forceUpdateCrosshair, initializeBackgrounds } from './modules/background.js';
 import { updateSliderBackground } from './utils.js';
 import { encodeCrosshair, decodeCrosshairShareCode } from './modules/sharecode.js';
 
@@ -14,11 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Update the UI with current settings
   updateUI();
   
-  // Draw the initial crosshair
-  updateCrosshair();
-  
-  // Set up the map navigation dots
-  updateMapDots();
+  // Initialize backgrounds (this will preload images)
+  initializeBackgrounds();
 
   // Check for share code in URL and apply if present
   const urlParams = new URLSearchParams(window.location.search);
@@ -65,7 +62,9 @@ document.addEventListener('DOMContentLoaded', () => {
     navigator.clipboard.readText().then(text => {
       try {
         const pastedSettings = JSON.parse(text);
-        updateSettings(pastedSettings);
+        Object.keys(pastedSettings).forEach(key => {
+          updateSettings(key, pastedSettings[key]);
+        });
         forceUpdateCrosshair(); // Force an immediate update of the crosshair
         updateUI(); // Update the UI to reflect the new settings
       } catch (error) {
