@@ -17,6 +17,7 @@ export const backgrounds = [
 
 export let currentBackgroundIndex = 0;
 let loadedImages = [];
+let animationFrameId = null;
 
 /**
  * Preloads all background images
@@ -41,15 +42,62 @@ function preloadImages() {
 /**
  * Updates the crosshair preview with the current background and crosshair
  */
-export const updateCrosshair = debounce(() => {
-  const canvas = document.getElementById("crosshairPreview");
-  const ctx = canvas.getContext("2d");
-  canvas.width = canvas.offsetWidth;
-  canvas.height = canvas.offsetHeight;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+export function updateCrosshair() {
+  if (animationFrameId) {
+    cancelAnimationFrame(animationFrameId);
+  }
+  
+  function animate() {
+    const canvas = document.getElementById("crosshairPreview");
+    const ctx = canvas.getContext("2d");
+    const ratio = window.devicePixelRatio || 1;
+    
+    // Set the desired aspect ratio
+    const aspectRatio = 970 / 300;
+    
+    // Get the container dimensions
+    const container = canvas.parentElement;
+    const containerWidth = container.clientWidth;
+    const containerHeight = container.clientHeight;
 
-  drawCrosshair(settings, canvas);
-}, 16); // 60fps
+    // Calculate the dimensions to maintain aspect ratio and fit within the container
+    let width, height;
+    if (containerWidth / containerHeight > aspectRatio) {
+      height = containerHeight;
+      width = height * aspectRatio;
+    } else {
+      width = containerWidth;
+      height = width / aspectRatio;
+    }
+
+    // Update canvas attributes and style
+    canvas.width = Math.round(width * ratio);
+    canvas.height = Math.round(height * ratio);
+    canvas.style.width = `${Math.round(width)}px`;
+    canvas.style.height = `${Math.round(height)}px`;
+    
+    // Center the canvas within its container
+    canvas.style.position = 'absolute';
+    canvas.style.left = `${Math.round((containerWidth - width) / 2)}px`;
+    canvas.style.top = `${Math.round((containerHeight - height) / 2)}px`;
+
+    // Scale the context to account for the device pixel ratio
+    ctx.scale(ratio, ratio);
+    ctx.clearRect(0, 0, width, height);
+
+    drawCrosshair(settings, canvas);
+    animationFrameId = requestAnimationFrame(animate);
+  }
+  
+  animate();
+}
+
+export function stopCrosshairAnimation() {
+  if (animationFrameId) {
+    cancelAnimationFrame(animationFrameId);
+    animationFrameId = null;
+  }
+}
 
 /**
  * Updates the background image
@@ -84,29 +132,28 @@ export function prevBackground() {
  */
 export function updateMapDots() {
   const dotsContainer = document.getElementById('mapDots');
-  if (dotsContainer.children.length !== backgrounds.length) {
-    dotsContainer.innerHTML = '';
-    backgrounds.forEach((_, index) => {
-      const dot = document.createElement('div');
-      dot.classList.add('map-dot');
-      dot.addEventListener('click', () => {
-        currentBackgroundIndex = index;
-        updateBackground();
-        updateMapDots();
-      });
-      dotsContainer.appendChild(dot);
-    });
-  }
+  const dots = dotsContainer.querySelectorAll('.map-dot');
   
-  Array.from(dotsContainer.children).forEach((dot, index) => {
+  dots.forEach((dot, index) => {
     dot.classList.toggle('active', index === currentBackgroundIndex);
+    
+    // Remove existing click event listeners to avoid duplicates
+    dot.removeEventListener('click', dot.clickHandler);
+    
+    // Add new click event listener
+    dot.clickHandler = () => {
+      currentBackgroundIndex = index;
+      updateBackground();
+      updateMapDots();
+    };
+    dot.addEventListener('click', dot.clickHandler);
   });
 }
 
 // Export a function to force update the crosshair
 export function forceUpdateCrosshair() {
-  updateCrosshair.flush(); // Immediately execute any pending debounced calls
-  updateCrosshair(); // Call updateCrosshair again to ensure it runs
+  stopCrosshairAnimation(); // Stop any existing animation
+  updateCrosshair(); // Start a new animation
 }
 
 // Initial setup

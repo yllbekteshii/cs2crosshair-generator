@@ -1,7 +1,7 @@
 // This module handles the user interface interactions
 
 import { settings, settingsConfig, updateSettings } from './settings.js';
-import { updateCrosshair, nextBackground, prevBackground, updateMapDots } from './background.js';
+import { updateCrosshair, nextBackground, prevBackground, updateMapDots, stopCrosshairAnimation } from './background.js';
 import { updateSliderBackground } from '../utils.js';
 import { encodeCrosshair, decodeCrosshairShareCode } from './sharecode.js';
 import { shareCurrentSettings } from '../main.js';
@@ -75,7 +75,7 @@ export function updateUI() {
  * Initializes all UI elements and sets up event listeners
  */
 export function initializeUI() {
-  const inputHandler = debounce((e) => {
+  const inputHandler = (e) => {
     const setting = e.target.id.replace("Number", "");
     let value;
     if (e.target.type === "checkbox") {
@@ -86,13 +86,14 @@ export function initializeUI() {
       value = parseInt(e.target.value);
     }
     if (updateSettings(setting, value)) {
-      updateCrosshair();
+      updateCrosshair(); // This now starts the animation loop
       updateUI();
     }
-  }, 16);
+  };
 
   document.querySelectorAll("input, select").forEach((input) => {
     input.addEventListener("input", inputHandler, { passive: true });
+    input.addEventListener("change", stopCrosshairAnimation); // Stop animation when input changes end
   });
 
   // Set up "Copy" button functionality

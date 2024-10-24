@@ -9,30 +9,25 @@
  */
 export function drawCrosshair(config, canvas, isDeployed = false) {
   const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas before each draw
+
   const centerX = canvas.width / 2;
   const centerY = canvas.height / 2;
-  ctx.imageSmoothingEnabled = true;
-  ctx.imageSmoothingQuality = "high";
-
+  
   ctx.save();
   ctx.translate(centerX, centerY);
-//   ctx.scale(zoomFactor, zoomFactor);
   ctx.translate(-centerX, -centerY);
-
   ctx.strokeStyle = "#000";
   ctx.globalAlpha = 0.03;
-
   const outlines = { enabled: config.outlineEnabled, value: config.outline };
   const outlineThickness = Math.max(1, Math.floor(outlines.value));
   const outlineOffset = {
     xy: 0.5 * outlineThickness,
     wh: 1 * outlineThickness,
   };
-
   ctx.fillStyle = `rgb(${config.red}, ${config.green}, ${config.blue})`;
   ctx.lineWidth = outlineThickness;
   ctx.globalAlpha = (config.alphaEnabled ? config.alpha : 200) / 255;
-
   const thickness = Math.max(
     1,
     Math.floor((config.thickness + 0.2222) / 0.4444)
@@ -42,11 +37,9 @@ export function drawCrosshair(config, canvas, isDeployed = false) {
   const startY = centerY - Math.floor(thickness / 2);
   let gap =
     (config.gap < 0 ? -Math.floor(-config.gap) : Math.floor(config.gap)) + 4;
-
   if (config.style !== 2 || isDeployed) {
     gap =
-      (config.gap < -4 ? -Math.floor(-config.gap) : Math.floor(config.gap)) +
-      4;
+      (config.gap < -4 ? -Math.floor(-config.gap) : Math.floor(config.gap)) + 4;
     if (isDeployed && config.deployedWeaponGapEnabled) gap += 3;
   } else if (config.splitDistance < 3) {
     const splitLength = Math.ceil(length * (1 - config.splitSizeRatio));
@@ -98,7 +91,6 @@ export function drawCrosshair(config, canvas, isDeployed = false) {
   } else {
     gap += 1;
   }
-
   drawCrosshairPart(
     ctx,
     startX + thickness + gap,
@@ -146,9 +138,7 @@ export function drawCrosshair(config, canvas, isDeployed = false) {
       outlineOffset,
       outlines
     );
-
   ctx.restore();
-
   return canvas;
 }
 
@@ -165,19 +155,14 @@ export function drawCrosshair(config, canvas, isDeployed = false) {
 export function drawCrosshairPart(ctx, x, y, width, height, outlineOffset, outlines) {
   ctx.fillRect(x, y, width, height);
   if (outlines.enabled && outlines.value !== 0) {
-    if (outlines.value < 1) {
-      ctx.beginPath();
-      ctx.moveTo(x - outlineOffset.xy, y + height);
-      ctx.lineTo(x - outlineOffset.xy, y - outlineOffset.xy);
-      ctx.lineTo(x + width, y - outlineOffset.xy);
-      ctx.stroke();
-    } else {
-      ctx.strokeRect(
-        x - outlineOffset.xy,
-        y - outlineOffset.xy,
-        width + outlineOffset.wh,
-        height + outlineOffset.wh
-      );
-    }
+      if (outlines.value < 1) {
+          ctx.beginPath();
+          ctx.moveTo(x - outlineOffset.xy, y + height);
+          ctx.lineTo(x - outlineOffset.xy, y - outlineOffset.xy);
+          ctx.lineTo(x + width, y - outlineOffset.xy);
+          ctx.stroke();
+      } else {
+          ctx.strokeRect(x - outlineOffset.xy, y - outlineOffset.xy, width + outlineOffset.wh, height + outlineOffset.wh);
+      }
   }
 }

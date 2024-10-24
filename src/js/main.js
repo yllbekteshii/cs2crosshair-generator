@@ -5,6 +5,7 @@ import { updateUI, initializeUI } from './modules/ui.js';
 import { updateCrosshair, updateMapDots, forceUpdateCrosshair, initializeBackgrounds } from './modules/background.js';
 import { updateSliderBackground } from './utils.js';
 import { encodeCrosshair, decodeCrosshairShareCode } from './modules/sharecode.js';
+import { debounce } from './utils.js';
 
 // Wait for the DOM to be fully loaded before initializing the application
 document.addEventListener('DOMContentLoaded', () => {
@@ -75,6 +76,11 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('Failed to read clipboard contents: ', err);
     });
   });
+
+  // Add resize event listener
+  window.addEventListener('resize', debounce(() => {
+    forceUpdateCrosshair();
+  }, 250));
 });
 
 // Add this function to handle sharing
