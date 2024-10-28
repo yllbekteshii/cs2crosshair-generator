@@ -8,14 +8,14 @@ import { debounce } from '../utils.js';
  * Array of available background maps
  */
 export const backgrounds = [
-  { name: "Ancient", url: "/maps/ancient.png" },
-  { name: "Mirage", url: "/maps/mirage.png" },
-  { name: "Inferno", url: "/maps/inferno.png" },
-  { name: "Nuke", url: "/maps/nuke.png" },
-  { name: "Overpass", url: "/maps/overpass.png" },
-  { name: "Anubis", url: "/maps/Anubis.png" },
-  { name: "Vertigo", url: "/maps/vertigo.png" },
-  { name: "dust2", url: "/maps/dust2.jpeg" },
+  { name: "Ancient", url: "./maps/ancient.png" },
+  { name: "Mirage", url: "./maps/mirage.png" },
+  { name: "Inferno", url: "./maps/inferno.png" },
+  { name: "Nuke", url: "./maps/nuke.png" },
+  { name: "Overpass", url: "./maps/overpass.png" },
+  { name: "Anubis", url: "./maps/Anubis.png" },
+  { name: "Vertigo", url: "./maps/vertigo.png" },
+  { name: "dust2", url: "./maps/dust2.jpeg" },
 ];
 
 export let currentBackgroundIndex = 0;  
