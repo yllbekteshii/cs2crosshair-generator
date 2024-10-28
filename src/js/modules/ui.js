@@ -153,4 +153,17 @@ export function initializeUI() {
       updateSliderBackground(this);
     });
   });
+
+  // Add this function to handle clicking outside the dropdown
+  function handleClickOutside(event) {
+    const dropdowns = document.querySelectorAll('.dropdown-content');
+    dropdowns.forEach(dropdown => {
+      if (dropdown.classList.contains('show') && !event.target.closest('.dropdown')) {
+        dropdown.classList.remove('show');
+      }
+    });
+  }
+
+  // Add event listener for clicks outside dropdown
+  document.addEventListener('click', handleClickOutside);
 }

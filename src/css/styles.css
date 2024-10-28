@@ -428,18 +428,24 @@ select:hover, select:focus {
     }
 
     .player-dropdown {
-        position: fixed;
-        top: auto;
-        bottom: 0;
+        position: absolute; /* Change from fixed to absolute */
+        top: 100%; /* Position below the button */
+        bottom: auto;
         left: 0;
         right: 0;
         width: 100%;
-        max-height: 60vh;
-        margin: 0;
-        border-radius: 12px 12px 0 0;
-        border-bottom: none;
-        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-        z-index: 1001;
+        max-height: 300px; /* Set a reasonable max height */
+        margin-top: 8px; /* Add some space between button and dropdown */
+        border-radius: 8px; /* Consistent border radius */
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        background: white;
+        z-index: 1000;
+    }
+
+    /* Remove the backdrop overlay */
+    .player-dropdown.show::before {
+        display: none;
     }
 
     .player-search {
@@ -447,7 +453,17 @@ select:hover, select:focus {
         top: 0;
         background: white;
         padding: 12px;
+        border-bottom: 1px solid #e0e0e0;
         z-index: 2;
+    }
+
+    .player-item {
+        padding: 12px;
+        border-bottom: 1px solid #f5f5f5;
+    }
+
+    .player-item:last-child {
+        border-bottom: none;
     }
 
     .player-search input {
@@ -546,5 +562,60 @@ select:hover, select:focus {
     border: 1px solid #e0e0e0;
     border-radius: 4px;
     font-size: 14px;
+}
+
+/* Update dropdown styles */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1000; /* Ensure dropdown is above other elements */
+  border-radius: 4px;
+  /* Remove any transparency */
+  opacity: 1 !important;
+  backdrop-filter: none !important;
+}
+
+/* Style for mobile devices */
+@media screen and (max-width: 768px) {
+  .dropdown-content {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 300px;
+    background-color: white;
+    padding: 20px;
+    border: 1px solid #ddd;
+    max-height: 80vh; /* Limit height on mobile */
+    overflow-y: auto; /* Allow scrolling if content is too long */
+  }
+
+  /* Add a semi-transparent overlay when dropdown is shown */
+  .dropdown-content.show::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+  }
+
+  /* Make dropdown items more touch-friendly */
+  .dropdown-content a,
+  .dropdown-content button {
+    padding: 12px 16px;
+    font-size: 16px;
+  }
+}
+
+/* Ensure the dropdown is visible when shown */
+.dropdown-content.show {
+  display: block;
 }
 
