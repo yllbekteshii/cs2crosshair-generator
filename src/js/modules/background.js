@@ -49,45 +49,49 @@ export function updateCrosshair() {
   if (animationFrameId) {
     cancelAnimationFrame(animationFrameId);
   }
-  function animate() {
-    const canvas = document.getElementById("crosshairPreview");
-    const ctx = canvas.getContext("2d");
-    const ratio = window.devicePixelRatio || 1;
-    
-    // Set the desired aspect ratio
-    const aspectRatio = 970 / 300;
-    
+
+  const canvas = document.getElementById("crosshairPreview");
+  const ctx = canvas.getContext("2d");
+  const ratio = window.devicePixelRatio || 1;
+  
+  function resizeCanvas() {
     // Get the container dimensions
     const container = canvas.parentElement;
     const containerWidth = container.clientWidth;
     const containerHeight = container.clientHeight;
-    // Calculate the dimensions to maintain aspect ratio and fit within the container
-    let width, height;
-    if (containerWidth / containerHeight > aspectRatio) {
-      height = containerHeight;
-      width = height * aspectRatio;
-    } else {
-      width = containerWidth;
-      height = width / aspectRatio;
-    }
-    // Update canvas attributes and style
-    canvas.width = Math.round(width * ratio);
-    canvas.height = Math.round(height * ratio);
-    canvas.style.width = `${Math.round(width)}px`;
-    canvas.style.height = `${Math.round(height)}px`;
     
-    // Center the canvas within its container
-    canvas.style.position = 'absolute';
-    canvas.style.left = `${Math.round((containerWidth - width) / 2)}px`;
-    canvas.style.top = `${Math.round((containerHeight - height) / 2)}px`;
-// Scale the context to account for the device pixel ratio
-ctx.scale(ratio, ratio);
-ctx.clearRect(0, 0, width, height);
-drawCrosshair(settings, canvas);
-animationFrameId = requestAnimationFrame(animate);
-}
+    // Set canvas size accounting for device pixel ratio
+    canvas.width = containerWidth * ratio;
+    canvas.height = containerHeight * ratio;
+    
+    // Set CSS size
+    canvas.style.width = `${containerWidth}px`;
+    canvas.style.height = `${containerHeight}px`;
+    
+    // Calculate the center (in CSS pixels)
+    const centerX = containerWidth / 2;
+    const centerY = containerHeight / 2;
+    
+    // Clear and scale context
+    ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform
+    ctx.scale(ratio, ratio);
+    ctx.clearRect(0, 0, containerWidth, containerHeight);
+    
+    // Draw crosshair at center
+    drawCrosshair(settings, canvas);
+    
 
-  animate();
+  }
+
+  // Initial resize
+  resizeCanvas();
+  
+  // Add resize observer to container
+  const resizeObserver = new ResizeObserver(() => {
+    resizeCanvas();
+  });
+  
+  resizeObserver.observe(canvas.parentElement);
 }
 
 export function stopCrosshairAnimation() {

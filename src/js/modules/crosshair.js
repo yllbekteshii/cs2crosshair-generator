@@ -9,14 +9,24 @@
  */
 export function drawCrosshair(config, canvas, isDeployed = false) {
   const ctx = canvas.getContext("2d");
-  ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas before each draw
+  const ratio = window.devicePixelRatio || 1;
+  
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  const centerX = canvas.width / 2;
-  const centerY = canvas.height / 2;
+  // Calculate center based on CSS pixels
+  const centerX = parseInt(canvas.style.width) / 2;
+  const centerY = parseInt(canvas.style.height) / 2;
+  
+  ('Drawing crosshair at:', {
+    centerX,
+    centerY,
+    cssWidth: canvas.style.width,
+    cssHeight: canvas.style.height,
+    ratio
+  });
   
   ctx.save();
-  ctx.translate(centerX, centerY);
-  ctx.translate(-centerX, -centerY);
+  
   ctx.strokeStyle = "#000";
   ctx.globalAlpha = 0.03;
   const outlines = { enabled: config.outlineEnabled, value: config.outline };
@@ -25,119 +35,39 @@ export function drawCrosshair(config, canvas, isDeployed = false) {
     xy: 0.5 * outlineThickness,
     wh: 1 * outlineThickness,
   };
+  
   ctx.fillStyle = `rgb(${config.red}, ${config.green}, ${config.blue})`;
   ctx.lineWidth = outlineThickness;
   ctx.globalAlpha = (config.alphaEnabled ? config.alpha : 200) / 255;
-  const thickness = Math.max(
-    1,
-    Math.floor((config.thickness + 0.2222) / 0.4444)
-  );
+  
+  const thickness = Math.max(1, Math.floor((config.thickness + 0.2222) / 0.4444));
   let length = Math.floor((config.length + 0.2222) / 0.4445);
   const startX = centerX - Math.floor(thickness / 2);
   const startY = centerY - Math.floor(thickness / 2);
-  let gap =
-    (config.gap < 0 ? -Math.floor(-config.gap) : Math.floor(config.gap)) + 4;
+  
+  let gap = (config.gap < 0 ? -Math.floor(-config.gap) : Math.floor(config.gap)) + 4;
+
   if (config.style !== 2 || isDeployed) {
-    gap =
-      (config.gap < -4 ? -Math.floor(-config.gap) : Math.floor(config.gap)) + 4;
+    gap = (config.gap < -4 ? -Math.floor(-config.gap) : Math.floor(config.gap)) + 4;
     if (isDeployed && config.deployedWeaponGapEnabled) gap += 3;
-  } else if (config.splitDistance < 3) {
-    const splitLength = Math.ceil(length * (1 - config.splitSizeRatio));
-    const originalAlpha = ctx.globalAlpha;
-    length = Math.floor(length * config.splitSizeRatio);
-    ctx.globalAlpha =
-      originalAlpha * (1 - Math.pow(1 - config.outerSplitAlpha, 0.45));
-    drawCrosshairPart(
-      ctx,
-      startX + thickness + gap + splitLength + 1,
-      startY,
-      length,
-      thickness,
-      outlineOffset,
-      outlines
-    );
-    drawCrosshairPart(
-      ctx,
-      startX - gap - length - splitLength - 1,
-      startY,
-      length,
-      thickness,
-      outlineOffset,
-      outlines
-    );
-    if (!config.tStyleEnabled)
-      drawCrosshairPart(
-        ctx,
-        startX,
-        startY - gap - length - splitLength - 1,
-        thickness,
-        length,
-        outlineOffset,
-        outlines
-      );
-    drawCrosshairPart(
-      ctx,
-      startX,
-      startY + thickness + gap + splitLength + 1,
-      thickness,
-      length,
-      outlineOffset,
-      outlines
-    );
-    ctx.globalAlpha =
-      originalAlpha * (1 - Math.pow(1 - config.innerSplitAlpha, 0.45));
-    length = splitLength;
-    gap += 2 * config.splitDistance - 4;
   } else {
     gap += 1;
   }
-  drawCrosshairPart(
-    ctx,
-    startX + thickness + gap,
-    startY,
-    length,
-    thickness,
-    outlineOffset,
-    outlines
-  );
-  drawCrosshairPart(
-    ctx,
-    startX - gap - length,
-    startY,
-    length,
-    thickness,
-    outlineOffset,
-    outlines
-  );
-  if (!config.tStyleEnabled)
-    drawCrosshairPart(
-      ctx,
-      startX,
-      startY - gap - length,
-      thickness,
-      length,
-      outlineOffset,
-      outlines
-    );
-  drawCrosshairPart(
-    ctx,
-    startX,
-    startY + thickness + gap,
-    thickness,
-    length,
-    outlineOffset,
-    outlines
-  );
-  if (config.centerDotEnabled)
-    drawCrosshairPart(
-      ctx,
-      startX,
-      startY,
-      thickness,
-      thickness,
-      outlineOffset,
-      outlines
-    );
+
+  // Draw the crosshair parts using the CSS-pixel-based center coordinates
+  drawCrosshairPart(ctx, startX + thickness + gap, startY, length, thickness, outlineOffset, outlines);
+  drawCrosshairPart(ctx, startX - gap - length, startY, length, thickness, outlineOffset, outlines);
+  
+  if (!config.tStyleEnabled) {
+    drawCrosshairPart(ctx, startX, startY - gap - length, thickness, length, outlineOffset, outlines);
+  }
+  
+  drawCrosshairPart(ctx, startX, startY + thickness + gap, thickness, length, outlineOffset, outlines);
+  
+  if (config.centerDotEnabled) {
+    drawCrosshairPart(ctx, startX, startY, thickness, thickness, outlineOffset, outlines);
+  }
+
   ctx.restore();
   return canvas;
 }
