@@ -6,6 +6,7 @@ import { updateCrosshair, updateMapDots, forceUpdateCrosshair, initializeBackgro
 import { updateSliderBackground } from './utils.js';
 import { encodeCrosshair, decodeCrosshairShareCode } from './modules/sharecode.js';
 import { debounce } from './utils.js';
+import { players, initializePlayerSearch } from './modules/players.js';
 
 // Wait for the DOM to be fully loaded before initializing the application
 document.addEventListener('DOMContentLoaded', () => {
@@ -81,6 +82,8 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('resize', debounce(() => {
     forceUpdateCrosshair();
   }, 250));
+
+  initializePlayerSearch();
 });
 
 // Add this function to handle sharing

@@ -13,9 +13,12 @@ export const backgrounds = [
   { name: "Inferno", url: "/maps/inferno.png" },
   { name: "Nuke", url: "/maps/nuke.png" },
   { name: "Overpass", url: "/maps/overpass.png" },
+  { name: "Anubis", url: "/maps/Anubis.png" },
+  { name: "Vertigo", url: "/maps/vertigo.png" },
+  { name: "dust2", url: "/maps/dust2.jpeg" },
 ];
 
-export let currentBackgroundIndex = 0;
+export let currentBackgroundIndex = 0;  
 let loadedImages = [];
 let animationFrameId = null;
 
@@ -46,7 +49,6 @@ export function updateCrosshair() {
   if (animationFrameId) {
     cancelAnimationFrame(animationFrameId);
   }
-  
   function animate() {
     const canvas = document.getElementById("crosshairPreview");
     const ctx = canvas.getContext("2d");
@@ -59,7 +61,6 @@ export function updateCrosshair() {
     const container = canvas.parentElement;
     const containerWidth = container.clientWidth;
     const containerHeight = container.clientHeight;
-
     // Calculate the dimensions to maintain aspect ratio and fit within the container
     let width, height;
     if (containerWidth / containerHeight > aspectRatio) {
@@ -69,7 +70,6 @@ export function updateCrosshair() {
       width = containerWidth;
       height = width / aspectRatio;
     }
-
     // Update canvas attributes and style
     canvas.width = Math.round(width * ratio);
     canvas.height = Math.round(height * ratio);
@@ -80,15 +80,13 @@ export function updateCrosshair() {
     canvas.style.position = 'absolute';
     canvas.style.left = `${Math.round((containerWidth - width) / 2)}px`;
     canvas.style.top = `${Math.round((containerHeight - height) / 2)}px`;
+// Scale the context to account for the device pixel ratio
+ctx.scale(ratio, ratio);
+ctx.clearRect(0, 0, width, height);
+drawCrosshair(settings, canvas);
+animationFrameId = requestAnimationFrame(animate);
+}
 
-    // Scale the context to account for the device pixel ratio
-    ctx.scale(ratio, ratio);
-    ctx.clearRect(0, 0, width, height);
-
-    drawCrosshair(settings, canvas);
-    animationFrameId = requestAnimationFrame(animate);
-  }
-  
   animate();
 }
 
