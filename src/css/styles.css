@@ -411,6 +411,7 @@ select:hover, select:focus {
     }
 
     .right-buttons button {
+        width: 100%;
         flex: 1 1 calc(50% - 5px);
         margin-bottom: 10px;
     }
